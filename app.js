@@ -34,6 +34,14 @@ app.options('*', cors(corsOptions));
 app.use(express.json({ limit: '10mb' })); 
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+app.get('/api/debug', (req, res) => {
+  res.json({
+    expressVersion: require('express').version,
+    pathToRegexp: require('path-to-regexp').version,
+    nodeVersion: process.version
+  });
+});
+
 app.use('/api/designs', designsRoutes);  
 app.use('/api/ico', icoGenerator);      
 app.use('/api/ai', aiFaviconGenerator); 
