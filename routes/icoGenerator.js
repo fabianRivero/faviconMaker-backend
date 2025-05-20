@@ -1,7 +1,7 @@
 const path = require("path");
 const express = require('express');
 const multer = require('multer');
-const { requireAuth } = require("../middlewares/clerkAuth.mjs");
+const { requireAuth } = require("../middlewares/clerkAuth");
 const pngToIco = require("png-to-ico");
 
 const router = express.Router();
