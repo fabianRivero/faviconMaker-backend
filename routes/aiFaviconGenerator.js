@@ -8,8 +8,6 @@ require('dotenv').config();
 
 const router = express.Router();
 
-const __dirname = path.resolve();
-
 const uploadPath = path.join(__dirname, 'uploads');
 const ACCOUNT_ID = process.env.ACCOUNT_ID;
 const API_TOKEN = process.env.TOKEN;
