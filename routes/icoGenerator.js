@@ -4,6 +4,13 @@ import multer from "multer";
 import { requireAuth } from "../middlewares/clerkAuth.mjs";
 import { fileURLToPath } from "url";
 import pngToIco from "png-to-ico";
+import { pathToRegexp } from 'path-to-regexp';
+
+express.Router.layer = function(path, options, fn) {
+  const keys = [];
+  const regexp = pathToRegexp(path, keys, options);
+  return { regexp, keys, fn };
+};
 
 const router = express.Router();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
