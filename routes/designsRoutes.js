@@ -1,6 +1,6 @@
-import express from "express";
-import { requireAuth } from "../middlewares/clerkAuth.mjs";
-import Design from "../models/design.js";
+const express = require("express");
+const {requireAuth} = require("../middlewares/clerkAuth")
+const Design = require("../models/design")
 
 const router = express.Router();
 
@@ -88,4 +88,4 @@ router.get("/test", async (req, res) => {
   res.json({ message: "Ruta de prueba funciona" });
 });
 
-export default router;
+module.exports = router;

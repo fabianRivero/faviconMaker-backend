@@ -1,11 +1,11 @@
-import "dotenv/config";
-import mongoose from "mongoose";
-import express from "express";
-import cors from "cors";
-import icoGenerator from './routes/icoGenerator.js';
-import aiFaviconGenerator from './routes/aiFaviconGenerator.js';
-import designsRoutes from "./routes/designsRoutes.js";
-import payloadTooLargeError from "./middlewares/payloadTooLargeError.js";
+require("dotenv/config");
+const mongoose = require("mongoose");
+const express = require("express");
+const cors = require("cors");
+const icoGenerator = require('./routes/icoGenerator.js');
+const aiFaviconGenerator = require('./routes/aiFaviconGenerator.js');
+const designsRoutes = require("./routes/designsRoutes.js");
+const payloadTooLargeError = require("./middlewares/payloadTooLargeError.js");
 
 const app = express();
 const DB_URL = process.env.MONGODB_URI === "test"
@@ -54,4 +54,4 @@ app.use((err, req, res, next) => {
 });
 
 
-export default app;
+module.export= app;

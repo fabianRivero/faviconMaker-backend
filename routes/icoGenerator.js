@@ -1,12 +1,11 @@
-import path from "path";
-import { fileURLToPath } from "url";
+const path = require("path");
 const express = require('express');
 const multer = require('multer');
-const { requireAuth } = require("../middlewares/clerkAuth.mjs");
+const { requireAuth } = require("../middlewares/clerkAuth");
 const pngToIco = require("png-to-ico");
 
 const router = express.Router();
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const __dirname = path.resolve();
 
 const storage = multer.memoryStorage(); 
 const upload = multer({ 
@@ -65,4 +64,4 @@ router.post("/generate-ico",
   }
 );
 
-export default router;
+module.exports = router;

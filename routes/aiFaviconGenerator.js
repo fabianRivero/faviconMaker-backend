@@ -1,19 +1,16 @@
-import express from "express";
-import pngToIco from "png-to-ico";
-import fetch from "node-fetch";
-import path from "path";
-import fs from "fs/promises";
-import { requireAuth } from "../middlewares/clerkAuth.mjs";
-import "dotenv/config";
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const express = require("express");
+const pngToIco = require("png-to-ico"); 
+const fetch = require("node-fetch");
+const path = require("path");
+const fs = require("fs/promises");
+const { requireAuth } = require("../middlewares/clerkAuth");
+require('dotenv').config();
 
 const router = express.Router();
 
-const uploadPath = path.join(__dirname, '../../uploads');
+const __dirname = path.resolve();
+
+const uploadPath = path.join(__dirname, 'uploads');
 const ACCOUNT_ID = process.env.ACCOUNT_ID;
 const API_TOKEN = process.env.TOKEN;
 
@@ -107,4 +104,4 @@ router.post("/generate-ai-favicon", requireAuth, async (req, res) => {
   }
 });
 
-export default router;
+module.exports = router; 

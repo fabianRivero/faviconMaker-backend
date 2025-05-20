@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const designSchema = new mongoose.Schema({
   userId: { type: String, required: true },
@@ -28,4 +28,4 @@ const designSchema = new mongoose.Schema({
 });
 
 const Design = mongoose.model("Design", designSchema);
-export default Design;
+module.exports = Design;
