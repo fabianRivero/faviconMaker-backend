@@ -5,7 +5,7 @@ const { requireAuth } = require("../middlewares/clerkAuth");
 const pngToIco = require("png-to-ico");
 
 const router = express.Router();
-const __dirname = path.resolve();
+const uploadPath = path.join(process.cwd(), 'uploads');
 
 const storage = multer.memoryStorage(); 
 const upload = multer({ 
