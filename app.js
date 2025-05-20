@@ -9,15 +9,15 @@ import payloadTooLargeError from "./middlewares/payloadTooLargeError.js";
 
 const app = express();
 const DB_URL = process.env.MONGODB_URI === "test"
-? "mongodb://localhost:27017/api-blog-test"
-: process.env.MONGODB_URI || "mongodb://localhost:27017/api-blog";
+? "mongodb://localhost:27017/faviconApp"
+: process.env.MONGODB_URI || "mongodb://localhost:27017/faviconApp";
 
 mongoose.connect(DB_URL)
 .then(() => console.log(`conected to ${DB_URL}`))
 .catch(err => console.error("Failed to conect to MongoDB", err));
 
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: process.env.FRONTEND_URL,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
