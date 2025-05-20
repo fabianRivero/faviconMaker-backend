@@ -8,7 +8,7 @@
   "scripts": {
     "start": "NODE_ENV=production node server.js",
     "build": "echo 'No build needed'",
-    "install:render": "npm install --production --legacy-peer-deps && npm cache clean --force"
+    "install:render": "npm install --legacy-peer-deps --force && npm cache clean --force"
   },
   "dependencies": {
     "@clerk/clerk-sdk-node": "4.13.23",
