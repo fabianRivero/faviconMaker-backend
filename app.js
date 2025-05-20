@@ -16,15 +16,20 @@ mongoose.connect(DB_URL)
 .then(() => console.log(`conected to ${DB_URL}`))
 .catch(err => console.error("Failed to conect to MongoDB", err));
 
-app.use(cors({
+const corsOptions = {
   origin: [
     'https://faviconmaker.netlify.app',
-    'http://localhost:3000'
+    'http://localhost:3000',
+    'https://faviconmaker-backend.onrender.com'
   ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
-}));
+  optionsSuccessStatus: 204 
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 app.use(express.json({ limit: '10mb' })); 
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
