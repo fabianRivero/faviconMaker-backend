@@ -17,7 +17,10 @@ mongoose.connect(DB_URL)
 .catch(err => console.error("Failed to conect to MongoDB", err));
 
 app.use(cors({
-  origin: process.env.FRONTEND_URL,
+  origin: [
+    'https://faviconmaker.netlify.app',
+    'http://localhost:3000'
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
