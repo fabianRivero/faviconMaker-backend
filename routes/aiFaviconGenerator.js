@@ -1,6 +1,6 @@
 const express = require("express");
 const pngToIco = require("png-to-ico"); 
-const fetch = require("node-fetch");
+const fetch = require("node-fetch").default;
 const path = require("path");
 const fs = require("fs/promises");
 const { requireAuth } = require("../middlewares/clerkAuth");

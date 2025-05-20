@@ -1,15 +1,22 @@
-export default function payloadTooLargeError(err, req, res, next){
-    if (err.type === 'entity.too.large') {
-        return res.status(413).json({ 
-            success: false,
-            error: `La imagen es demasiado grande. Límite: 10MB`,
-            details: req.get('Content-Length') 
-            ? `Tamaño recibido: ${Math.round(parseInt(req.get('Content-Length')) / (1024 * 1024))}MB`
-            : null
+function payloadTooLargeError(err, req, res, next) {
+  if (err.status === 413 || err.type === 'entity.too.large') {
+    const receivedSize = req.get('Content-Length');
+    let details = null;
+    
+    if (receivedSize) {
+      const sizeInMB = Math.round(parseInt(receivedSize) / (1024 * 1024));
+      details = `Tamaño recibido: ${sizeInMB}MB | Límite: 10MB`;
+    }
+
+    return res.status(413).json({ 
+      success: false,
+      error: 'La imagen excede el límite de tamaño permitido',
+      details,
+      code: 'PAYLOAD_TOO_LARGE'
     });
   }
+  
   next(err);
-
 }
 
-
+module.exports = payloadTooLargeError;
