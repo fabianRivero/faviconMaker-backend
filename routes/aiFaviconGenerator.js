@@ -20,14 +20,12 @@ const ensureUploadsDir = async () => {
   }
 };
 
-const sendIconFile = (res, filePath, origin) => {
+const sendIconFile = (res, filePath) => {
   return new Promise((resolve, reject) => {
     res.sendFile(filePath, {
       headers: {
         'Content-Type': 'image/x-icon',
-        'Content-Disposition': 'attachment; filename=ai-favicon.ico',
-        'Access-Control-Allow-Origin': origin || '*',
-        'Access-Control-Expose-Headers': 'Content-Disposition'
+        'Content-Disposition': 'attachment; filename=ai-favicon.ico'
       }
     }, (err) => {
       if (err) reject(err);
