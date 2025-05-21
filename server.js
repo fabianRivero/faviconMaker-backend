@@ -1,4 +1,3 @@
-require("dotenv/config");
 const app = require('./app.js');
 
 const host = process.env.HOST || "localhost";
