@@ -3,6 +3,7 @@ const express = require('express');
 const multer = require('multer');
 const { requireAuth } = require("../middlewares/clerkAuth");
 const pngToIco = require("png-to-ico");
+const cors = require('cors'); 
 
 const router = express.Router();
 const uploadPath = path.join(process.cwd(), 'uploads');
@@ -23,13 +24,14 @@ const upload = multer({
   }
 });
 
+router.options("/generate-ico", cors()); 
+
 router.post("/generate-ico", 
+  cors(), 
   requireAuth, 
   upload.array("images"), 
   async (req, res) => {
-    
     try {
-
       if (!req.files || req.files.length === 0) {
         return res.status(400).json({ 
           success: false,
@@ -43,12 +45,12 @@ router.post("/generate-ico",
         return { buffer: file.buffer, size };
       }).sort((a, b) => a.size - b.size);
 
-
       const icoBuffer = await pngToIco(sortedImages.map(img => img.buffer));
 
       res.set({
         'Content-Type': 'image/x-icon',
-        'Content-Disposition': 'attachment; filename=favicon.ico'
+        'Content-Disposition': 'attachment; filename=favicon.ico',
+        'Access-Control-Allow-Origin': req.headers.origin || '*'
       });
 
       res.send(icoBuffer);

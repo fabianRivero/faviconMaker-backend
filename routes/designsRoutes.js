@@ -1,10 +1,25 @@
 const express = require("express");
-const {requireAuth} = require("../middlewares/clerkAuth")
-const Design = require("../models/design")
+const { requireAuth } = require("../middlewares/clerkAuth");
+const Design = require("../models/design");
+const cors = require('cors'); // Añade esto
 
 const router = express.Router();
 
-router.get("/", requireAuth, async (req, res) => {
+// Configuración CORS específica para las rutas
+const corsOptions = {
+  origin: true,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+// Manejadores OPTIONS para todas las rutas que lo necesiten
+router.options("/", cors(corsOptions)); // Para GET y POST
+router.options("/:id", cors(corsOptions)); // Para PUT y DELETE
+router.options("/test", cors(corsOptions)); // Para la ruta de prueba
+
+// Rutas normales con CORS y autenticación
+router.get("/", cors(corsOptions), requireAuth, async (req, res) => {
   try {
     const items = await Design.find({ userId: req.auth.userId }).sort({ createdAt: -1 });
     res.json(items);
@@ -17,7 +32,7 @@ router.get("/", requireAuth, async (req, res) => {
   }
 });
 
-router.post("/", requireAuth, async (req, res) => {
+router.post("/", cors(corsOptions), requireAuth, async (req, res) => {
   const {
     imageUrl,
     originalImage,
@@ -29,22 +44,26 @@ router.post("/", requireAuth, async (req, res) => {
   if (!userId || !imageUrl || !originalImage) {
     return res.status(400).json({ error: "Faltan campos requeridos" });
   }
-  const result = await Design.create({
-    userId,
-    imageUrl,
-    originalImage,
-    description,
-    config,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  });
 
-  res.json({ success: true, id: result._id });
+  try {
+    const result = await Design.create({
+      userId,
+      imageUrl,
+      originalImage,
+      description,
+      config,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    res.json({ success: true, id: result._id });
+  } catch (err) {
+    console.error("Error al crear diseño:", err);
+    res.status(500).json({ error: "Error al guardar diseño" });
+  }
 });
 
-
-router.put("/:id", requireAuth, async (req, res) => {
-
+router.put("/:id", cors(corsOptions), requireAuth, async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.auth.userId;
@@ -74,8 +93,7 @@ router.put("/:id", requireAuth, async (req, res) => {
   }
 });
 
-
-router.delete("/:id", requireAuth, async (req, res) => {
+router.delete("/:id", cors(corsOptions), requireAuth, async (req, res) => {
   try {
     await Design.findByIdAndDelete(req.params.id);
     res.status(204).end();
@@ -84,7 +102,7 @@ router.delete("/:id", requireAuth, async (req, res) => {
   }
 });
 
-router.get("/test", async (req, res) => {
+router.get("/test", cors(corsOptions), async (req, res) => {
   res.json({ message: "Ruta de prueba funciona" });
 });
 
