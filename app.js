@@ -2,6 +2,7 @@ require("dotenv/config");
 const mongoose = require("mongoose");
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 const icoGenerator = require('./routes/icoGenerator.js');
 const aiFaviconGenerator = require('./routes/aiFaviconGenerator.js');
 const designsRoutes = require("./routes/designsRoutes.js");
@@ -40,12 +41,12 @@ const corsOptions = {
   optionsSuccessStatus: 200
 };
 
-// app.options('*', cors(corsOptions));
 app.use(cors(corsOptions));
 
 app.use(express.json({ limit: '10mb' })); 
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+app.use('/uploads', express.static(path.join(__dirname, 'routes', 'uploads')));
 app.use('/api/designs', designsRoutes);  
 app.use('/api/ico', icoGenerator);      
 app.use('/api/ai', aiFaviconGenerator); 

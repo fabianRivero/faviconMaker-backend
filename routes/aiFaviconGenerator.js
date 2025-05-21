@@ -1,56 +1,15 @@
-const express = require("express");
-const pngToIco = require("png-to-ico");
-const fetch = require("node-fetch").default;
-const path = require("path");
-const fs = require("fs/promises");
-const { requireAuth } = require("../middlewares/clerkAuth");
-require('dotenv').config();
-
-const router = express.Router();
-
-const uploadPath = path.join(__dirname, 'uploads');
-const ACCOUNT_ID = process.env.ACCOUNT_ID;
-const API_TOKEN = process.env.TOKEN;
-
-const ensureUploadsDir = async () => {
-  try {
-    await fs.access(uploadPath);
-  } catch {
-    await fs.mkdir(uploadPath, { recursive: true });
-  }
-};
-
-const sendIconFile = (res, filePath) => {
-  return new Promise((resolve, reject) => {
-    res.sendFile(filePath, {
-      headers: {
-        'Content-Type': 'image/x-icon',
-        'Content-Disposition': 'attachment; filename=ai-favicon.ico'
-      }
-    }, (err) => {
-      if (err) reject(err);
-      else resolve();
-    });
-  });
-};
-
 router.post("/generate-ai-favicon", requireAuth, async (req, res) => {
   await ensureUploadsDir();
-  
   const timestamp = Date.now();
-  const imagePath = path.join(uploadPath, `ai-favicon-${timestamp}.png`);
-  const icoPath = path.join(uploadPath, `ai-favicon-${timestamp}.ico`);
+  const imageName = `ai-favicon-${timestamp}`;
+  const imagePath = path.join(uploadPath, `${imageName}.png`);
+  const icoPath = path.join(uploadPath, `${imageName}.ico`);
 
   try {
     const { prompt } = req.body;
 
     if (!prompt || typeof prompt !== 'string' || prompt.trim().length === 0) {
-      return res.status(400).json({ 
-        error: "Prompt is required and must be a non-empty string",
-        headers: {
-          'Access-Control-Allow-Origin': req.headers.origin || '*'
-        }
-      });
+      return res.status(400).json({ error: "Prompt is required and must be a non-empty string" });
     }
 
     console.log(`Generating AI favicon with prompt: "${prompt}"`);
@@ -86,45 +45,15 @@ router.post("/generate-ai-favicon", requireAuth, async (req, res) => {
     await fs.writeFile(icoPath, icoBuffer);
     console.log(`ICO file generated at: ${icoPath}`);
 
-    await sendIconFile(res, icoPath, req.headers.origin);
+    res.status(200).json({
+      urls: {
+        png: `/uploads/${imageName}.png`,
+        ico: `/uploads/${imageName}.ico`
+      }
+    });
 
   } catch (err) {
     console.error('Error in AI generation pipeline:', err);
-    
-    try {
-      await fs.unlink(imagePath).catch(() => {});
-      await fs.unlink(icoPath).catch(() => {});
-    } catch (cleanupError) {
-      console.error('Error during cleanup:', cleanupError);
-    }
-
-    res.status(500).json({ 
-      error: "Error generating AI favicon",
-      details: process.env.NODE_ENV === 'development' ? err.message : undefined,
-      headers: {
-        'Access-Control-Allow-Origin': req.headers.origin || '*',
-        'Access-Control-Allow-Credentials': 'true'
-      }
-    });
-  } finally {
-    try {
-      await fs.unlink(imagePath).catch(() => {});
-      await fs.unlink(icoPath).catch(() => {});
-    } catch (cleanupError) {
-      console.error('Error during cleanup:', cleanupError);
-    }
+    res.status(500).json({ error: "Error generating AI favicon" });
   }
 });
-
-router.options("/generate-ai-favicon", (req, res) => {
-  res.set({
-    'Access-Control-Allow-Origin': req.headers.origin || '*',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    'Access-Control-Allow-Credentials': 'true',
-    'Access-Control-Max-Age': '86400'
-  });
-  res.status(204).end();
-});
-
-module.exports = router;
