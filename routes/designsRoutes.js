@@ -1,11 +1,10 @@
 const express = require("express");
 const { requireAuth } = require("../middlewares/clerkAuth");
 const Design = require("../models/design");
-const cors = require('cors'); // Añade esto
+const cors = require('cors'); 
 
 const router = express.Router();
 
-// Configuración CORS específica para las rutas
 const corsOptions = {
   origin: true,
   credentials: true,
@@ -13,12 +12,10 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization']
 };
 
-// Manejadores OPTIONS para todas las rutas que lo necesiten
-router.options("/", cors(corsOptions)); // Para GET y POST
-router.options("/:id", cors(corsOptions)); // Para PUT y DELETE
-router.options("/test", cors(corsOptions)); // Para la ruta de prueba
+router.options("/", cors(corsOptions)); 
+router.options("/:id", cors(corsOptions)); 
+router.options("/test", cors(corsOptions)); 
 
-// Rutas normales con CORS y autenticación
 router.get("/", cors(corsOptions), requireAuth, async (req, res) => {
   try {
     const items = await Design.find({ userId: req.auth.userId }).sort({ createdAt: -1 });
