@@ -17,41 +17,38 @@ mongoose.connect(DB_URL)
   .catch(err => console.error("Failed to connect to MongoDB", err));
 
 const corsOptions = {
-  origin: function (origin, callback) {
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    
     const allowedOrigins = [
       'https://faviconmaker.netlify.app',
-      'http://localhost:3000'
+      'http://localhost:3000',
+      'https://faviconmaker-backend.onrender.com'
     ];
     
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
+      console.error(`Origen no permitido: ${origin}`);
       callback(new Error('Not allowed by CORS'));
     }
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: [
-    'Content-Type',
-    'Authorization',
-    'X-Requested-With',
-    'Accept'
-  ],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
   credentials: true,
-  preflightContinue: false,
   optionsSuccessStatus: 200
 };
 
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', req.headers.origin);
+app.use(cors(corsOptions));
+
+app.options('*', (req, res) => {
+  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.header('Access-Control-Allow-Credentials', 'true');
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-  );
-  next();
+  res.status(200).end();
 });
 
-app.options('*', cors(corsOptions));
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
@@ -61,10 +58,6 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use((req, res, next) => {
-  console.log(`[${req.method}] ${req.originalUrl} Origin: ${req.headers.origin}`);
-  next();
-});
 
 app.use(require('./middlewares/corsFix'));
 app.use(express.json({ limit: '10mb' })); 
