@@ -17,17 +17,39 @@ mongoose.connect(DB_URL)
   .catch(err => console.error("Failed to connect to MongoDB", err));
 
 const corsOptions = {
-  origin: [
-    'https://faviconmaker.netlify.app',
-    'http://localhost:3000',
-    'https://faviconmaker-backend.onrender.com'
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      'https://faviconmaker.netlify.app',
+      'http://localhost:3000'
+    ];
+    
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization',
+    'X-Requested-With',
+    'Accept'
   ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], 
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
   credentials: true,
   preflightContinue: false,
-  optionsSuccessStatus: 204
+  optionsSuccessStatus: 200
 };
+
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', req.headers.origin);
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+  );
+  next();
+});
 
 app.options('*', cors(corsOptions));
 
@@ -44,6 +66,7 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(require('./middleware/corsFix'));
 app.use(express.json({ limit: '10mb' })); 
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
