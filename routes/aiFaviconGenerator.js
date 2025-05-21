@@ -70,7 +70,8 @@ router.post("/generate-ai-favicon", requireAuth, async (req, res) => {
     res.set({
       'Content-Type': 'image/x-icon',
       'Content-Disposition': 'attachment; filename=ai-favicon.ico',
-      'Cache-Control': 'no-store'
+      'Cache-Control': 'no-store',
+      'Access-Control-Expose-Headers': 'Content-Disposition' 
     });
 
     res.sendFile(icoPath, async (err) => {
@@ -79,6 +80,10 @@ router.post("/generate-ai-favicon", requireAuth, async (req, res) => {
         await fs.unlink(icoPath);
         if (err) {
           console.error('Error sending file:', err);
+          res.set({
+            'Access-Control-Allow-Origin': req.headers.origin || '*',
+            'Access-Control-Allow-Credentials': 'true'
+          });
         }
       } catch (cleanupError) {
         console.error('Error cleaning up files:', cleanupError);
@@ -102,4 +107,4 @@ router.post("/generate-ai-favicon", requireAuth, async (req, res) => {
   }
 });
 
-module.exports = router; 
+module.exports = router;
