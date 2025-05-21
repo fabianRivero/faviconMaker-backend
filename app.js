@@ -66,7 +66,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(require('./middleware/corsFix'));
+app.use(require('./middlewares/corsFix'));
 app.use(express.json({ limit: '10mb' })); 
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
